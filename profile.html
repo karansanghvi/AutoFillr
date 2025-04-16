@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFillr</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="getStarted" class="screen">
+        <div class="header">
+            <div class="dashboardTitleSection">
+                <a href="./index.html"><img src="./icons/icon (Custom).png" alt="logo" class="logo" /></a>
+                <h1 class="logoText">AutoFillr</h1>
+            </div>
+        <hr/>
+        </div>
+        <div class="pageSection">
+            <h1 class="title">Profile</h1>
+            <div class="profile-grid">
+                    <div>
+                        <div>
+                            <p>Enter Full Name:</p>
+                            <input 
+                                id="fullName"
+                                type="text" 
+                                className="input" 
+                                placeholder="Full Name" 
+                                name="name"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <p>Enter Email Address:</p>
+                            <input 
+                                id="emailAddress"
+                                type="text" 
+                                className="input" 
+                                placeholder="Email Address" 
+                                name="email"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <p>Enter Phone Number:</p>
+                            <input 
+                                id="phoneNumber"
+                                type="number" 
+                                className="input" 
+                                placeholder="Phone Number" 
+                                name="phoneNumber"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <p>Enter LinkedIn URL:</p>
+                            <input 
+                                id="linkedinURL"
+                                type="text" 
+                                className="input" 
+                                placeholder="LinkedIn URL" 
+                                name="email"
+                            />
+                        </div>
+                        <div>
+                            <p>Enter Portfolio/Website URL:</p>
+                            <input 
+                                id="website"
+                                type="number" 
+                                className="input" 
+                                placeholder="Phone Number" 
+                                name="website"
+                            />
+                        </div>
+                        <div class="file-upload-wrapper">
+                            <p>Upload Resume:</p>
+                            <div class="file-upload-box">
+                              <label for="resumeUpload" class="custom-file-button">Choose File</label>
+                              <span id="file-name" class="file-name">No file chosen</span>
+                            </div>
+                            <input 
+                              id="resumeUpload"
+                              type="file"
+                              name="resume"
+                              class="hidden-file-input"
+                            />
+                          </div>                          
+                    </div>
+            </div>
+            <br/>
+            <div class="button-container">
+                <button type="submit" id="cancelProfileButton" class="primary-button">Cancel</button>
+                <button type="submit" id="saveProfileButton" class="primary-button">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "AutoFillr",
+    "description": "Auto-fill forms and automate workflows with ease",
+    "version": "1.0.0",
+    "action": {
+      "default_icon": "icons/icon (Custom).png",
+      "default_title": "Open AutoFillr"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "permissions": [
+      "storage",
+      "activeTab",
+      "scripting"
+    ],
+    "icons": {
+      "128": "icons/icon (Custom).png"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["index.html", "getStarted.html", "profile.html", "dashboard.html"],
+        "matches": ["<all_urls>"]
+      }
+    ]
+}  
