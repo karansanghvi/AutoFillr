@@ -2,7 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const getStartedBtn = document.getElementById("getStartedButton");
     if (getStartedBtn) {
         getStartedBtn.addEventListener("click", () => {
-            window.location.href = "getStarted.html";
+            const hasVisited = localStorage.getItem("hasVisited");
+
+            if (hasVisited) {
+                window.location.href = "profile.html";
+            } else {
+                localStorage.setItem("hasVisited", "true");
+                window.location.href = "getStarted.html";
+            }
         });
     }
 
@@ -17,8 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("resumeUpload");
     const fileNameDisplay = document.getElementById("file-name");
 
-    fileInput.addEventListener("change", () => {
-        const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
-        fileNameDisplay.textContent = fileName;
-    });
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener("change", () => {
+            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
+            fileNameDisplay.textContent = fileName;
+        });
+    }
 });

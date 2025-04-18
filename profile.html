@@ -20,87 +20,89 @@
         </div>
         <div class="pageSection">
             <h1 class="title">Profile</h1>
-            <div class="profile-grid">
-                    <div>
+                <form id="profileForm" class="form">
+                    <div class="profile-grid">
                         <div>
-                            <p>Enter Full Name:</p>
-                            <input 
-                                id="fullName"
-                                type="text" 
-                                className="input" 
-                                placeholder="Full Name" 
-                                name="name"
-                                required
-                            />
+                            <div>
+                                <p>Enter Full Name:</p>
+                                <input 
+                                    id="fullName"
+                                    type="text" 
+                                    className="input" 
+                                    placeholder="Full Name" 
+                                    name="name"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <p>Enter Email Address:</p>
+                                <input 
+                                    id="emailAddress"
+                                    type="text" 
+                                    className="input" 
+                                    placeholder="Email Address" 
+                                    name="email"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <p>Enter Phone Number:</p>
+                                <input 
+                                    id="phoneNumber"
+                                    type="number" 
+                                    className="input" 
+                                    placeholder="Phone Number" 
+                                    name="phoneNumber"
+                                    required
+                                />
+                            </div>
                         </div>
+
                         <div>
-                            <p>Enter Email Address:</p>
-                            <input 
-                                id="emailAddress"
-                                type="text" 
-                                className="input" 
-                                placeholder="Email Address" 
-                                name="email"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <p>Enter Phone Number:</p>
-                            <input 
-                                id="phoneNumber"
-                                type="number" 
-                                className="input" 
-                                placeholder="Phone Number" 
-                                name="phoneNumber"
-                                required
-                            />
+                            <div>
+                                <p>Enter LinkedIn URL:</p>
+                                <input 
+                                    id="linkedinURL"
+                                    type="text" 
+                                    className="input" 
+                                    placeholder="LinkedIn URL" 
+                                    name="email"
+                                />
+                            </div>
+                            <div>
+                                <p>Enter Portfolio/Website URL:</p>
+                                <input 
+                                    id="website"
+                                    type="text" 
+                                    className="input" 
+                                    placeholder="Phone Number" 
+                                    name="website"
+                                />
+                            </div>
+                            <div class="file-upload-wrapper">
+                                <p>Upload Resume:</p>
+                                <div class="file-upload-box">
+                                <label for="resumeUpload" class="custom-file-button">Choose File</label>
+                                <span id="file-name" class="file-name">No file chosen</span>
+                                </div>
+                                <input 
+                                id="resumeUpload"
+                                type="file"
+                                name="resume"
+                                class="hidden-file-input"
+                                />
+                            </div>                          
                         </div>
                     </div>
 
-                    <div>
-                        <div>
-                            <p>Enter LinkedIn URL:</p>
-                            <input 
-                                id="linkedinURL"
-                                type="text" 
-                                className="input" 
-                                placeholder="LinkedIn URL" 
-                                name="email"
-                            />
-                        </div>
-                        <div>
-                            <p>Enter Portfolio/Website URL:</p>
-                            <input 
-                                id="website"
-                                type="number" 
-                                className="input" 
-                                placeholder="Phone Number" 
-                                name="website"
-                            />
-                        </div>
-                        <div class="file-upload-wrapper">
-                            <p>Upload Resume:</p>
-                            <div class="file-upload-box">
-                              <label for="resumeUpload" class="custom-file-button">Choose File</label>
-                              <span id="file-name" class="file-name">No file chosen</span>
-                            </div>
-                            <input 
-                              id="resumeUpload"
-                              type="file"
-                              name="resume"
-                              class="hidden-file-input"
-                            />
-                          </div>                          
+                    <div class="button-container">
+                        <button type="submit" id="cancelProfileButton" class="primary-button">Cancel</button>
+                        <button type="submit" id="saveProfileButton" class="primary-button">Save</button>
                     </div>
-            </div>
-            <br/>
-            <div class="button-container">
-                <button type="submit" id="cancelProfileButton" class="primary-button">Cancel</button>
-                <button type="submit" id="saveProfileButton" class="primary-button">Save</button>
-            </div>
+                </form>
         </div>
     </div>
 
-    <script src="profile.js"></script>
+    <script type="module" src="profile.js"></script>
 </body>
 </html>

@@ -1,54 +1,85 @@
+import { storage } from "./storage.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("resumeUpload");
     const fileNameDisplay = document.getElementById("file-name");
     const saveProfileButton = document.getElementById("saveProfileButton");
-    const form = document.querySelector('form');  // Add the form to validate all fields
+    const cancelProfileButton = document.getElementById("cancelProfileButton");
 
-    // Show the selected file name
     fileInput.addEventListener("change", () => {
         const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
         fileNameDisplay.textContent = fileName;
     });
 
-    // Add event listener to the save button
     if (saveProfileButton) {
-        saveProfileButton.addEventListener("click", (event) => {
-            // Prevent default form submission to check validity first
+        saveProfileButton.addEventListener("click", async (event) => {
             event.preventDefault();
 
-            // Check if all required fields are filled
             const requiredFields = document.querySelectorAll('input[required]');
             let allFieldsValid = true;
 
             requiredFields.forEach((field) => {
                 if (!field.value.trim()) {
                     allFieldsValid = false;
-                    field.classList.add('error');  // Add error class for styling
+                    field.classList.add('error');
                 } else {
                     field.classList.remove('error');
                 }
             });
 
-            // If all required fields are valid, go to the next page
-            if (allFieldsValid) {
-                window.location.href = "dashboard.html";
-            } else {
-                showCustomAlert('Please fill out all required fields.');
+            if (!allFieldsValid) {
+                showErrorAlert('Please fill out all required fields.');
+                return;
+            }
+
+            // Gather form data
+            const profileData = {
+                fullName: document.getElementById("fullName").value.trim(),
+                email: document.getElementById("emailAddress").value.trim(),
+                phoneNumber: document.getElementById("phoneNumber").value.trim(),
+                linkedinURL: document.getElementById("linkedinURL").value.trim(),
+                website: document.getElementById("website").value.trim(),
+                resumeFileName: fileInput.files.length > 0 ? fileInput.files[0].name : null,
+            };
+
+            try {
+                const existingData = await storage.get("userProfiles") || [];
+                existingData.push(profileData);
+                await storage.set("userProfiles", existingData);
+
+                console.log("Profile Added: ", profileData);
+                showSuccessAlert("Profile Saved Successfully!!");
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 2000);
+            } catch (err) {
+                console.error("Error saving profile:", err);
+                showErrorAlert("Something went wrong while saving. Please try again.");
             }
         });
     }
 
-    // Function to show custom alert
-    function showCustomAlert(message) {
-        // Create a custom alert div
+    if (cancelProfileButton) {
+        cancelProfileButton.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+    }
+
+    function showErrorAlert(message) {
         const alertDiv = document.createElement('div');
-        alertDiv.classList.add('custom-alert');
+        alertDiv.classList.add('error-alert');
         alertDiv.innerHTML = message;
-
-        // Append the alert to the body or form
         document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
 
-        // Remove the alert after 5 seconds
+    function showSuccessAlert(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.classList.add('success-alert');
+        alertDiv.innerHTML = message;
+        document.body.appendChild(alertDiv);
         setTimeout(() => {
             alertDiv.remove();
         }, 5000);
