@@ -1,11 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const getStartedBtn = document.getElementById("getStartedButton");
     if (getStartedBtn) {
         getStartedBtn.addEventListener("click", () => {
             const hasVisited = localStorage.getItem("hasVisited");
 
             if (hasVisited) {
-                window.location.href = "profile.html";
+                window.location.href = "dashboard.html";
             } else {
                 localStorage.setItem("hasVisited", "true");
                 window.location.href = "getStarted.html";

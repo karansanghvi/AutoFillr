@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="dashboardScreen" class="screen">
-      <div class="header">
+  <div id="dashboardScreen" class="screen">
+      <div class="headerDashboard">
         <div class="dashboardTitleSection">
           <img src="./icons/icon (Custom).png" alt="logo" class="logo" />
           <h1 class="logoText">AutoFillr</h1>
@@ -22,7 +22,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <ul>
-          <li><a href="./profile.html">Profile</a></li>
+          <li><a href="#" id="homeLink">Home</a></li>
+          <li><a href="#" id="profileLink">Profile</a></li>
           <li><a href="#">AutoFill This Form</a></li>
           <li><a href="#">Record A Macro</a></li>
           <li><a href="#">Run Saved Macro</a></li>
@@ -32,10 +33,39 @@
     </div>
 
     <div class="main-content">
-      <!--  -->
+      <!-- Home -->
+      <div id="homeSection" class="section">
+        <h1 class="title">Hey there! 👋</h1>
+        <div class="grid">
+          <div>
+            <p class="profileText">Your Profile</p>
+            <div id="profileGridContainer"></div>
+            <div class="pagination-dots" id="paginationDots"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div id="profileSection" class="section" style="display: none;">
+        <div class="profileTitle">
+          <h1 class="title">Profile</h1>
+          <button id="addNewProfile" class="add-new-btn">Add Profile</button>
+        </div>
+        <div id="profiles"></div>
+        <div class="pagination-dots" id="paginationDotsTwo"></div>
+      </div> 
     </div>
+
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <h1 class="text">Are you sure you want to delete this profile?</h1>
+        <p id="profileName"></p>
+        <button id="cancelDelete" class="cancel-btn">Cancel</button>
+        <button id="confirmDelete" class="confirm-btn">Delete</button>
+      </div>
+    </div>    
   </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="dashboard.js"></script>
 </body>
 </html>

@@ -6,10 +6,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const saveProfileButton = document.getElementById("saveProfileButton");
     const cancelProfileButton = document.getElementById("cancelProfileButton");
 
+    // Handle file input display
     fileInput.addEventListener("change", () => {
         const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
         fileNameDisplay.textContent = fileName;
     });
+
+    // Populate form if editing
+    (async () => {
+        const editProfile = await storage.get("editProfile");
+        if (editProfile) {
+            document.getElementById("fullName").value = editProfile.fullName || "";
+            document.getElementById("emailAddress").value = editProfile.email || "";
+            document.getElementById("phoneNumber").value = editProfile.phoneNumber || "";
+            document.getElementById("linkedinURL").value = editProfile.linkedinURL || "";
+            document.getElementById("website").value = editProfile.website || "";
+
+            if (editProfile.resumeFileName) {
+                fileNameDisplay.textContent = editProfile.resumeFileName;
+            }
+
+            saveProfileButton.textContent = "Update";
+        }
+    })();
 
     if (saveProfileButton) {
         saveProfileButton.addEventListener("click", async (event) => {
@@ -32,26 +51,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Gather form data
             const profileData = {
                 fullName: document.getElementById("fullName").value.trim(),
                 email: document.getElementById("emailAddress").value.trim(),
                 phoneNumber: document.getElementById("phoneNumber").value.trim(),
                 linkedinURL: document.getElementById("linkedinURL").value.trim(),
                 website: document.getElementById("website").value.trim(),
-                resumeFileName: fileInput.files.length > 0 ? fileInput.files[0].name : null,
+                resumeFileName: fileInput.files.length > 0 ? fileInput.files[0].name : fileNameDisplay.textContent || null,
             };
 
             try {
                 const existingData = await storage.get("userProfiles") || [];
-                existingData.push(profileData);
-                await storage.set("userProfiles", existingData);
+                const editProfile = await storage.get("editProfile");
+                let updatedProfiles;
 
-                console.log("Profile Added: ", profileData);
-                showSuccessAlert("Profile Saved Successfully!!");
+                if (editProfile) {
+                    // Update existing profile (based on matching email)
+                    updatedProfiles = existingData.map(p =>
+                        p.email === editProfile.email ? profileData : p
+                    );
+                    await storage.set("editProfile", null); // Clear edit mode
+                } else {
+                    // Add new profile
+                    updatedProfiles = [...existingData, profileData];
+                }
+
+                await storage.set("userProfiles", updatedProfiles);
+
+                console.log("Profile Saved: ", profileData);
+                showSuccessAlert(editProfile ? "Profile Updated Successfully!" : "Profile Saved Successfully!");
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
-                }, 2000);
+                }, 1500);
             } catch (err) {
                 console.error("Error saving profile:", err);
                 showErrorAlert("Something went wrong while saving. Please try again.");
@@ -60,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (cancelProfileButton) {
-        cancelProfileButton.addEventListener("click", () => {
+        cancelProfileButton.addEventListener("click", async () => {
+            await storage.set("editProfile", null);
             window.location.href = "index.html";
         });
     }
@@ -82,6 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(alertDiv);
         setTimeout(() => {
             alertDiv.remove();
-        }, 5000);
+        }, 3000);
     }
 });
