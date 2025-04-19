@@ -13,7 +13,8 @@
     "permissions": [
       "storage",
       "activeTab",
-      "scripting"
+      "scripting",
+      "tabs"
     ],
     "icons": {
       "128": "icons/icon (Custom).png"
@@ -23,5 +24,6 @@
         "resources": ["index.html", "getStarted.html", "profile.html", "dashboard.html", "settings.html", "help.html"],
         "matches": ["<all_urls>"]
       }
-    ]
+    ],
+    "host_permissions": ["<all_urls>"]
 }  
