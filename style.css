@@ -535,7 +535,7 @@ input:focus.error {
   
 .modal-content {
     background-color: white;
-    margin: 15% auto;
+    margin: 8% auto;
     padding: 20px;
     width: 80%;
     max-width: 500px;
@@ -544,7 +544,7 @@ input:focus.error {
 }
 
 .modal-content .text {
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 600;
 }
 
@@ -575,6 +575,21 @@ button {
     margin-right: auto;
     width: 100%;
     max-width: 200px;
+} 
+
+.subText {
+    font-size: 15px;
+    color: black;
+    text-align: left;
+    font-weight: 500;
+}
+
+.tabList {
+    text-align: left;
+}
+
+.tab:hover {
+    background-color: #f0f0f0;
 }  
 
 /* Media Queries */

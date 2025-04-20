@@ -2,79 +2,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const autofillLink = document.getElementById('autofillLink');
     const modal = createOrGetModal();
   
-    // !uncomment this
-    // autofillLink.addEventListener('click', async (e) => {
-    //   e.preventDefault();
-    //   showModal(modal);
-    //   const groupedTabs = await findActiveTabs();
-    //   renderTabsList(modal, groupedTabs);
-    // });
     autofillLink.addEventListener('click', async (e) => {
       e.preventDefault();
       showModal(modal);
-      const { tabsWithForm, tabsWithoutForm } = await findActiveTabs();
-      renderTabsList(modal, tabsWithForm, tabsWithoutForm);
-    });    
+      const groupedTabs = await findActiveTabs();
+      renderTabsList(modal, groupedTabs);
+    });
 });
+
+let selectedTabInfo = null;
   
 function createOrGetModal() {
-    let modal = document.getElementById('formTabsModal');
-    if (modal) return modal;
+  let modal = document.getElementById('formTabsModal');
+  if (modal) return modal;
+
+  modal = document.createElement('div');
+  modal.id = 'formTabsModal';
+  modal.className = 'modal';
+  modal.innerHTML = `
+  <div class="modal-content">
+    <div class="text">Step 1: Select the tab which you want to autofill</div>
+    <ul id="tabsList" class="tabList" style="padding: 0; margin: 0; list-style: none;"></ul>
+    <button id="nextBtn" class="confirm-btn">Next</button>
+  </div>
+`;
   
-    modal = document.createElement('div');
-    modal.id = 'formTabsModal';
-    modal.className = 'modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <div class="text">Active Tabs:</div>
-        <ul id="tabsList" style="margin-top: 20px; text-align: left;"></ul>
-        <button onclick="document.getElementById('formTabsModal').style.display='none'" style="margin-top: 20px; padding: 10px 20px; border: none; background: #007bff; color: white; border-radius: 10px;">Close</button>
+  document.body.appendChild(modal);
+
+  const nextBtn = modal.querySelector('#nextBtn');
+  nextBtn.addEventListener('click', () => {
+    if (!selectedTabInfo) {
+      alert('Please select a tab first.');
+      return;
+    }
+
+    modal.querySelector('.modal-content').innerHTML = `
+       <div class="text">Step 2: Select the profile which you want to autofill</div>
+      <div style="margin: 10px 0; padding: 10px; background: #f1f1f1; border-radius: 8px;">
+       
+      </div>
+      <div class="container">
+        <button id="backBtn" class="confirm-btn">Back</button>
+        <button id="closeStep2" class="confirm-btn">Close</button>
       </div>
     `;
-    document.body.appendChild(modal);
-    return modal;
+
+    const backBtn = modal.querySelector('#backBtn');
+    backBtn.addEventListener('click', async () => {
+      const groupedTabs = await findActiveTabs();
+      renderStep1(modal, groupedTabs); // Restore step 1
+    });
+
+    const closeBtn = modal.querySelector('#closeStep2');
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  });
+
+  return modal;
 }
   
 function showModal(modal) {
     modal.style.display = 'block';
 }
 
-// !uncomment this
-// async function findActiveTabs() {
-//   return new Promise((resolve) => {
-//     chrome.tabs.query({ currentWindow: true }, async (tabs) => {
-//       const filteredTabs = [];
-
-//       for (const tab of tabs) {
-//         if (!tab.url || !tab.url.startsWith('http')) continue;
-
-//         try {
-//           const [result] = await chrome.scripting.executeScript({
-//             target: { tabId: tab.id },
-//             func: () => {
-//               return !!document.querySelector('form');
-//             },
-//           });
-
-//           if (result?.result) {
-//             filteredTabs.push(tab);
-//           }
-//         } catch (err) {
-//           console.warn('Script injection failed for tab:', tab.url, err);
-//         }
-//       }
-
-//       const groupedTabs = groupTabsByDomain(filteredTabs);
-//       resolve(groupedTabs);
-//     });
-//   });
-// }
-
 async function findActiveTabs() {
   return new Promise((resolve) => {
     chrome.tabs.query({ currentWindow: true }, async (tabs) => {
-      const tabsWithForm = [];
-      const tabsWithoutForm = [];
+      const filteredTabs = [];
 
       for (const tab of tabs) {
         if (!tab.url || !tab.url.startsWith('http')) continue;
@@ -88,16 +83,15 @@ async function findActiveTabs() {
           });
 
           if (result?.result) {
-            tabsWithForm.push(tab);
-          } else {
-            tabsWithoutForm.push(tab);
+            filteredTabs.push(tab);
           }
         } catch (err) {
-          console.warn('Script injection failed for:', tab.url, err);
+          console.warn('Script injection failed for tab:', tab.url, err);
         }
       }
 
-      resolve({ tabsWithForm, tabsWithoutForm });
+      const groupedTabs = groupTabsByDomain(filteredTabs);
+      resolve(groupedTabs);
     });
   });
 }
@@ -125,63 +119,57 @@ function groupTabsByDomain(tabs) {
   
     return groups;
 }  
-  
-// !uncomment this
-// function renderTabsList(modal, groupedTabs) {
-//     const list = modal.querySelector('#tabsList');
-//     list.innerHTML = '';
-  
-//     if (Object.keys(groupedTabs).length === 0) {
-//       list.innerHTML = '<li>No active tabs found.</li>';
-//       return;
-//     }
 
-//     Object.keys(groupedTabs).forEach((domain) => {
-//       const groupEl = document.createElement('div');
-//       groupEl.className = 'group';
-  
-//       const title = document.createElement('strong');
-//       title.innerText = domain + ` (${groupedTabs[domain].length})`;
-//       groupEl.appendChild(title);
-  
-//       groupedTabs[domain].forEach((tab) => {
-//         const tabEl = document.createElement('div');
-//         tabEl.className = 'tab';
-//         tabEl.innerText = tab.title;
-//         tabEl.onclick = () => chrome.tabs.update(tab.id, { active: true });
-//         groupEl.appendChild(tabEl);
-//       });
-  
-//       list.appendChild(groupEl);
-//     });
-//   }  
-
-function renderTabsList(modal, tabsWithForm, tabsWithoutForm) {
+function renderTabsList(modal, groupedTabs) {
   const list = modal.querySelector('#tabsList');
   list.innerHTML = '';
 
-  const renderGroup = (titleText, tabsArray, color) => {
-    const title = document.createElement('h3');
-    title.innerText = `${titleText} (${tabsArray.length})`;
-    title.style.margin = '10px 0';
-    title.style.color = color;
-    list.appendChild(title);
+  if (Object.keys(groupedTabs).length === 0) {
+    list.innerHTML = '<li>No active tabs found.</li>';
+    return;
+  }
 
-    if (tabsArray.length === 0) {
-      const none = document.createElement('li');
-      none.innerText = 'None found.';
-      list.appendChild(none);
-    } else {
-      tabsArray.forEach((tab) => {
-        const tabEl = document.createElement('div');
-        tabEl.className = 'tab';
-        tabEl.innerText = tab.title;
-        tabEl.onclick = () => chrome.tabs.update(tab.id, { active: true });
-        list.appendChild(tabEl);
+  Object.keys(groupedTabs).forEach((domain) => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'group';
+    groupEl.style.marginBottom = '15px';
+
+    groupedTabs[domain].forEach((tab) => {
+      const tabEl = document.createElement('div');
+      tabEl.className = 'tab';
+      
+      // Apply consistent card style
+      tabEl.style.padding = '10px';
+      tabEl.style.marginTop = '10px';
+      tabEl.style.background = '#f1f1f1';
+      tabEl.style.borderRadius = '8px';
+      tabEl.style.cursor = 'pointer';
+      tabEl.style.lineHeight = '1.4';
+      tabEl.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.05)';
+    
+      tabEl.innerHTML = `
+        <div style="font-weight: 500;"><strong>Title:</strong> ${tab.title}</div>
+        <div style="font-size: 13px; color: #555;"><strong>URL:</strong> ${tab.url}</div>
+      `;
+    
+      tabEl.addEventListener('click', () => {
+        list.querySelectorAll('.tab').forEach(el => {
+          el.style.backgroundColor = '#f1f1f1';
+        });
+    
+        tabEl.style.backgroundColor = '#e0f0ff';
+        selectedTabInfo = {
+          id: tab.id,
+          url: tab.url,
+          title: tab.title
+        };
+    
+        console.log('Selected Tab:', selectedTabInfo);
       });
-    }
-  };
+    
+      groupEl.appendChild(tabEl);
+    });    
 
-  renderGroup('✅ Tabs with Forms', tabsWithForm, 'green');
-  renderGroup('❌ Tabs without Forms', tabsWithoutForm, 'red');
+    list.appendChild(groupEl);
+  });
 }
