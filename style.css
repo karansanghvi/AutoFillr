@@ -403,7 +403,7 @@ input:focus.error {
     box-sizing: border-box;
 }
 
-.grid .profileText {
+.grid .headingText {
     font-size: 30px;
     font-weight: 600;
     margin-top: 0;
@@ -586,6 +586,11 @@ button {
 
 .tabList {
     text-align: left;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow-wrap: break-word; /* Break long words */
+    word-wrap: break-word;
 }
 
 .tab:hover {
@@ -695,7 +700,7 @@ button {
         font-size: 32px;
     }
     
-    .grid .profileText {
+    .grid .headingText {
         font-size: 24px;
     }
     
@@ -809,7 +814,7 @@ button {
         text-align: center;
     }
     
-    .grid .profileText {
+    .grid .headingText {
         font-size: 20px;
         text-align: center;
     }

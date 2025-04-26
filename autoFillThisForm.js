@@ -121,13 +121,122 @@ function renderStep2(modal, profiles) {
 }
 
 function renderStep3(modal) {
-  modal.querySelector('.modal-content')?.remove(); 
+    modal.querySelector('.modal-content')?.remove();
     modal.innerHTML = `
-        <div class="modal-content">
-            <div class="text">Step 3: Confirm And Autofill</div>
+      <div class="modal-content">
+          <div class="text">Step 3: Confirm and Autofill</div>
+          <div class="profile-list" style="
+            padding: 10px;
+            margin-top: 10px;
+            background: #f1f1f1;
+            border-radius: 8px;
+            cursor: default;
+            line-height: 1.4;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap;
+            text-align: left;
+        ">
+            <strong>Tab:</strong> ${selectedTabInfo?.title || 'N/A'}<br/>
+            <strong>Profile:</strong> ${selectedProfile?.fullName || 'N/A'}
         </div>
+          <div style="margin-top: 20px;">
+              <button id="autofillNowBtn" class="confirm-btn">Autofill Now</button>
+          </div>
+      </div>
     `;
+
+    const autofillNowBtn = modal.querySelector('#autofillNowBtn');
+    autofillNowBtn.addEventListener('click', async () => {
+        if (!selectedTabInfo || !selectedProfile) {
+            alert('Tab or Profile not selected');
+            return;
+        }
+
+        try {
+            modal.innerHTML = '';
+    
+            chrome.scripting.executeScript({
+                target: { tabId: selectedTabInfo.id },
+                func: autofillForm,
+                args: [selectedProfile]
+            }).then(() => {
+                console.log('Autofill injected successfully');
+                setTimeout(() => {
+                    showSuccessAlert('Autofill Completed Successfully!');
+                }, 2000);
+            }).catch(err => {
+                console.error('Autofill Script Injection Failed', err);
+                alert('Failed to autofill. Please try again.');
+            });
+    
+            const autofillHistoryItem = {
+                timestamp: new Date().toISOString(),
+                website: selectedTabInfo.url,
+                tabTitle: selectedTabInfo.title,
+                profileUsed: selectedProfile.fullName || selectedProfile.name || 'Unknown Profile'
+            };
+    
+            const existingHistory = await storage.get('autofillHistory') || [];
+            existingHistory.push(autofillHistoryItem);
+    
+            await storage.set('autofillHistory', existingHistory);
+            console.log('Autofill history updated:', autofillHistoryItem);
+    
+        } catch (err) {
+            console.error('Unexpected Autofill Error', err);
+            alert('Something went wrong during autofill.');
+        }
+    });
 }
+
+function autofillForm(profile) {
+    const fieldMapping = {
+      email: ['email', 'e-mail', 'your email'],
+      fullName: ['name', 'full name', 'your name'],
+      phoneNumber: ['phone', 'phone number', 'mobile', 'contact'],
+      linkedinURL: ['linkedin', 'linkedin profile'],
+      website: ['website', 'personal website', 'portfolio'],
+      resumeFileName: ['resume', 'cv', 'upload resume']
+    };
+  
+    function matchField(field, keywords) {
+      const lowerField = field.toLowerCase();
+      return keywords.some(keyword => lowerField.includes(keyword));
+    }
+  
+    const inputs = document.querySelectorAll('input, textarea');
+  
+    inputs.forEach(input => {
+      let label = '';
+      if (input.labels && input.labels.length > 0) {
+        label = input.labels[0].innerText || '';
+      }
+      
+      const attributes = [
+        input.name || '',
+        input.id || '',
+        input.placeholder || '',
+        label
+      ];
+  
+      for (const key in fieldMapping) {
+        if (fieldMapping.hasOwnProperty(key)) {
+          const keywords = fieldMapping[key];
+          
+          if (attributes.some(attr => matchField(attr, keywords))) {
+            if (profile[key]) {
+              input.value = profile[key];
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+              input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            break; 
+          }
+        }
+      }
+    });
+}  
 
 // --- Find Tabs with Forms ---
 async function findActiveTabs() {
@@ -284,4 +393,14 @@ function updateProfileList(modal, profiles) {
             profileList.appendChild(profileCard);
         });
     }
+}
+
+function showSuccessAlert(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.classList.add('success-alert');
+    alertDiv.innerHTML = message;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
 }
