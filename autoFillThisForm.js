@@ -61,7 +61,7 @@ function renderStep1(modal, groupedTabs) {
     const nextBtn = modal.querySelector('#nextBtn');
     nextBtn.addEventListener('click', async () => {
         if (!selectedTabInfo) {
-            alert('Please select a tab first.');
+            showErrorAlert('Please select a tab first.');
             return;
         }
 
@@ -105,7 +105,7 @@ function renderStep2(modal, profiles) {
     const nextBtn2 = modal.querySelector('#nextStep2');
     nextBtn2.addEventListener('click', async () => {
       if (!selectedProfile) {
-        alert('Please select a profile first');
+        showErrorAlert('Please select a profile first');
         return;
       }
 
@@ -150,7 +150,7 @@ function renderStep3(modal) {
     const autofillNowBtn = modal.querySelector('#autofillNowBtn');
     autofillNowBtn.addEventListener('click', async () => {
         if (!selectedTabInfo || !selectedProfile) {
-            alert('Tab or Profile not selected');
+            showErrorAlert('Tab or Profile not selected');
             return;
         }
 
@@ -164,11 +164,11 @@ function renderStep3(modal) {
             }).then(() => {
                 console.log('Autofill injected successfully');
                 setTimeout(() => {
-                    showSuccessAlert('Autofill Completed Successfully!');
+                    renderStep4(modal);
                 }, 2000);
             }).catch(err => {
                 console.error('Autofill Script Injection Failed', err);
-                alert('Failed to autofill. Please try again.');
+                showErrorAlert('Failed to autofill. Please try again.');
             });
     
             const autofillHistoryItem = {
@@ -183,12 +183,30 @@ function renderStep3(modal) {
     
             await storage.set('autofillHistory', existingHistory);
             console.log('Autofill history updated:', autofillHistoryItem);
+            await renderAutofillHistory();
     
         } catch (err) {
             console.error('Unexpected Autofill Error', err);
-            alert('Something went wrong during autofill.');
+            showErrorAlert('Something went wrong during autofill.');
         }
     });
+}
+
+function renderStep4(modal) {
+    modal.querySelector('.modal-content')?.remove();
+    modal.innerHTML = `
+      <div class="modal-content">
+          <div class="text">Form Autofilled Successfully</div>
+          <div style="margin-top: 20px;">
+              <button id="finalCloseBtn" class="confirm-btn">Close</button>
+          </div>
+      </div>
+    `;
+
+    const finalCloseBtn = modal.querySelector('#finalCloseBtn');
+    finalCloseBtn.addEventListener('click', () => {
+        modal.remove();
+    })
 }
 
 function autofillForm(profile) {
@@ -395,12 +413,12 @@ function updateProfileList(modal, profiles) {
     }
 }
 
-function showSuccessAlert(message) {
+function showErrorAlert(message) {
     const alertDiv = document.createElement('div');
-    alertDiv.classList.add('success-alert');
+    alertDiv.classList.add('error-alert');
     alertDiv.innerHTML = message;
     document.body.appendChild(alertDiv);
     setTimeout(() => {
         alertDiv.remove();
-    }, 3000);
+    }, 5000);
 }

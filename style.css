@@ -409,6 +409,27 @@ input:focus.error {
     margin-top: 0;
 }
 
+.recentActivitiesBox {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 90%;
+    max-width: 1400px;
+    max-height: 800px;
+    text-align: left;
+    margin-bottom: 10px;
+    position: relative;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
 .dashboardBox {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -589,7 +610,7 @@ button {
     padding: 0;
     margin: 0;
     list-style: none;
-    overflow-wrap: break-word; /* Break long words */
+    overflow-wrap: break-word; 
     word-wrap: break-word;
 }
 
