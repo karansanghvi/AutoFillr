@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
+  // Autofill History Show On Recent Activities
   async function renderAutofillHistory() {
     const recentBox = document.querySelector('.recentActivitiesBox');
     const deleteHistoryButton = document.getElementById('deleteHistory');
