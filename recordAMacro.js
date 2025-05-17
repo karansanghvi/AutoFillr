@@ -60,6 +60,20 @@ function renderStep1(modal, groupedTabs) {
         }
 
         console.log('Tab selected for action:', selectedTabInfo);
+
+        await storage.set('selected_tab_for_macro', selectedTabInfo);
+
+        const macroHistory = (await storage.set('macroHistory')) || [];
+
+        macroHistory.push({
+            type: 'macro',
+            tabTitle: selectedTabInfo.title,
+            tabUrl: selectedTabInfo.url,
+            timeStamp: Date.now()
+        });
+
+        await storage.set('macroHistory', macroHistory)
+
         renderStep2(modal);
     });
 
@@ -86,7 +100,6 @@ function renderStep2(modal) {
         console.log("🎬 Macro record initiated on:", selectedTabInfo);
 
         try {
-            // ✅ Try injecting the script (safe even if already injected)
             await chrome.scripting.executeScript({
                 target: { tabId: selectedTabInfo.id },
                 files: ['contentScript.js']
