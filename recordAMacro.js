@@ -136,6 +136,9 @@ function renderStep3(modal) {
 
                 await storage.set('macro_actions', existingMacros);
                 showSuccessAlert("Macro Saved Successfully!!");
+                setTimeout(() => {
+                    modal.remove();
+                }, 2000);
             } else {
                 showErrorAlert('No valid recorded actions received.');
             }
