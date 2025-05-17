@@ -45,8 +45,17 @@ function renderStep1(modal, groupedTabs) {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="text">Step 1: Select the tab to record a macro</div>
-            <ul id="tabsList" class="tabList" style="padding: 0; margin: 0; list-style: none;"></ul>
-            <button id="confirmBtn" class="confirm-btn">Confirm</button>
+            <ul id="tabsList" class="tabList" style="
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                max-height: 220px; 
+                overflow-y: auto;
+            "></ul>
+            <div class="container" style="margin-top: 15px;">
+                <button id="cancelBtn" class="confirm-btn">Cancel</button>
+                <button id="confirmBtn" class="confirm-btn">Confirm</button>
+            </div>
         </div>
     `;
 
@@ -62,8 +71,10 @@ function renderStep1(modal, groupedTabs) {
         console.log('Tab selected for action:', selectedTabInfo);
 
         await storage.set('selected_tab_for_macro', selectedTabInfo);
+        console.log('Selected tab saved to storage:', selectedTabInfo);
 
-        const macroHistory = (await storage.set('macroHistory')) || [];
+        const macroHistory = (await storage.get('macroHistory')) || [];
+        console.log('Existing Macro History (before push):', macroHistory);
 
         macroHistory.push({
             type: 'macro',
@@ -75,6 +86,11 @@ function renderStep1(modal, groupedTabs) {
         await storage.set('macroHistory', macroHistory)
 
         renderStep2(modal);
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        console.log('Modal closed by user');
+        modal.remove();
     });
 
     tabRefreshInterval = setInterval(async () => {

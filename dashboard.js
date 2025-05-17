@@ -176,49 +176,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  // Autofill History Show On Recent Activities
-  async function renderAutofillHistory() {
+  // Autofill History & Macro History Show On Recent Activities
+  async function renderRecentActivities() {
     const recentBox = document.querySelector('.recentActivitiesBox');
     const deleteHistoryButton = document.getElementById('deleteHistory');
-  
-    if (!recentBox) return;
-  
-    const autofillHistory = await storage.get('autofillHistory') || [];
-  
-    if (autofillHistory.length === 0) {
-      recentBox.innerHTML = `<div style="padding: 10px; color: #888;">No recent activities.</div>`;
-      if (deleteHistoryButton) {
-        deleteHistoryButton.style.display = 'none';
-      }
-      return;
-    }
-  
-    if (deleteHistoryButton) {
-      deleteHistoryButton.style.display = 'inline-block';
-    }
-  
-    // Clear first
-    recentBox.innerHTML = '';
 
-    autofillHistory.reverse().forEach(item => {
-      const activityDiv = document.createElement('div');
-      activityDiv.style.padding = '15px';
-      activityDiv.style.marginBottom = '8px';
-      activityDiv.style.fontSize = '14px';
-      activityDiv.style.lineHeight = '1.4';
-  
-      activityDiv.innerHTML = `
-        <strong>${item.profileUsed}</strong> autofilled on ${item.tabTitle}<br/>
-        <small style="color:#999;">${new Date(item.timestamp).toLocaleString()}</small>
-      `;
-  
-      recentBox.appendChild(activityDiv);
+    if (!recentBox) {
+        console.warn('⚠️ .recentActivitiesBox not found in DOM');
+        return;
+    }
+
+    // Get both histories
+    const autofillHistory = await storage.get('autofillHistory') || [];
+    const macroHistory = await storage.get('macroHistory') || [];
+
+    console.log('📦 Autofill History:', autofillHistory);
+    console.log('🛠️ Macro History:', macroHistory);
+
+    // Merge and sort by timestamp
+    const combinedHistory = [...autofillHistory, ...macroHistory].sort((a, b) => b.timestamp - a.timestamp);
+
+    if (combinedHistory.length === 0) {
+        recentBox.innerHTML = `<div style="padding: 10px; color: #888;">No recent activities.</div>`;
+        if (deleteHistoryButton) {
+            deleteHistoryButton.style.display = 'none';
+        }
+        console.log('ℹ️ No recent activities found.');
+        return;
+    }
+
+    if (deleteHistoryButton) {
+        deleteHistoryButton.style.display = 'inline-block';
+    }
+
+    recentBox.innerHTML = ''; // clear
+
+    combinedHistory.forEach((item, index) => {
+        console.log(`🔄 Rendering activity #${index + 1}:`, item);
+
+        const activityDiv = document.createElement('div');
+        activityDiv.style.padding = '15px';
+        activityDiv.style.marginBottom = '8px';
+        activityDiv.style.fontSize = '14px';
+        activityDiv.style.lineHeight = '1.4';
+
+        let content = '';
+
+        if (item.type === 'macro') {
+            content = `
+                <strong>Macro Recording Started</strong> on ${item.tabTitle}<br/>
+                <small style="color:#999;">${new Date(item.timestamp).toLocaleString()}</small>
+            `;
+        } else {
+            content = `
+                <strong>${item.profileUsed}</strong> autofilled on ${item.tabTitle}<br/>
+                <small style="color:#999;">${new Date(item.timestamp).toLocaleString()}</small>
+            `;
+        }
+
+        activityDiv.innerHTML = content;
+        recentBox.appendChild(activityDiv);
     });
+
+    console.log('✅ Recent activities rendered.');
   }
   
   const deleteHistoryButton = document.getElementById('deleteHistory');
   deleteHistoryButton.addEventListener('click', async () => {
     await storage.set('autofillHistory', []); 
+    await storage.set('macroHistory', []);
   
     const recentBox = document.querySelector('.recentActivitiesBox');
     if (recentBox) {
@@ -252,5 +278,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     profileDisplayContainer.innerHTML = "<p>Error loading profiles.</p>";
   }
 
-  renderAutofillHistory();
+  renderRecentActivities();
 });
