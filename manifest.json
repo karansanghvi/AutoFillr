@@ -21,7 +21,7 @@
     },
     "web_accessible_resources": [
       {
-        "resources": ["index.html", "getStarted.html", "profile.html", "dashboard.html", "settings.html", "help.html"],
+        "resources": ["index.html", "getStarted.html", "profile.html", "dashboard.html", "settings.html", "help.html", "contentScript.js"],
         "matches": ["<all_urls>"]
       }
     ],
