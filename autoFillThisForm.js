@@ -174,37 +174,41 @@ function renderStep3(modal) {
 
         try {
             modal.innerHTML = '';
-    
-            chrome.scripting.executeScript({
+
+            await chrome.scripting.executeScript({
                 target: { tabId: selectedTabInfo.id },
                 func: autofillForm,
                 args: [selectedProfile]
-            }).then(() => {
-                console.log('Autofill injected successfully');
-                setTimeout(() => {
-                    renderStep4(modal);
-                }, 2000);
-            }).catch(err => {
-                console.error('Autofill Script Injection Failed', err);
-                showErrorAlert('Failed to autofill. Please try again.');
             });
-    
+
+            console.log('✅ Autofill injected successfully');
+
             const autofillHistoryItem = {
                 timestamp: new Date().toISOString(),
                 website: selectedTabInfo.url,
                 tabTitle: selectedTabInfo.title,
                 profileUsed: selectedProfile.fullName || selectedProfile.name || 'Unknown Profile'
             };
-    
+
             const existingHistory = await storage.get('autofillHistory') || [];
             existingHistory.push(autofillHistoryItem);
-    
             await storage.set('autofillHistory', existingHistory);
-            console.log('Autofill history updated:', autofillHistoryItem);
-            await renderAutofillHistory();
-    
+            console.log('📜 Autofill history updated:', autofillHistoryItem);
+
+            try {
+                await renderAutofillHistory();
+            } catch (err) {
+                console.warn('⚠️ Failed to render autofill history:', err);
+                // Continue even if history rendering fails
+            }
+
+            console.log('✅ Proceeding to success modal...');
+            setTimeout(() => {
+                renderStep4(modal);
+            }, 2000);
+
         } catch (err) {
-            console.error('Unexpected Autofill Error', err);
+            console.error('❌ Unexpected Autofill Error:', err);
             showErrorAlert('Something went wrong during autofill.');
         }
     });

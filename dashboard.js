@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const profileLink = document.getElementById("profileLink");
   const homeSection = document.getElementById("homeSection");
   const profileSection = document.getElementById("profileSection");
+  const runSavedMacroSection = document.getElementById("runSavedMacroSection");
 
   const addNewProfile = document.getElementById("addNewProfile");
   
@@ -25,6 +26,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   let homePage = 0;
   let profilePage = 0;
   let profileToDelete = null;
+  let macroPage = 0;
+  const macrosPerPage = 5;
+  let savedMacros = [];
 
   // Section toggling
   function showSection(sectionToShow) {
@@ -49,6 +53,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     profileLink.classList.add("active");
     homeLink.classList.remove("active");
   });  
+
+  runSavedMacroLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSection(runSavedMacroSection);
+    runSavedMacroLink.classList.add("active");
+    homeLink.classList.remove("active");
+  });
 
   addNewProfile.addEventListener("click", (e) => {
     console.log("Redirecting to profile page");
@@ -176,6 +187,84 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
+  // MACRO section rendering
+  const renderMacroSection = (page) => {
+  const macrosContainer = document.getElementById("macros");
+  macrosContainer.innerHTML = "";
+
+  const start = page * macrosPerPage;
+  const end = start + macrosPerPage;
+  const visibleMacros = savedMacros.slice(start, end);
+
+  visibleMacros.forEach((macro, index) => {
+    const macroBox = document.createElement("div"); // <-- fixed: don't use getElementById('div')
+    macroBox.className = "profile-box";
+
+    const formattedDate = macro.timestamp
+      ? new Date(macro.timestamp).toLocaleString()
+      : 'Unknown';
+
+    macroBox.innerHTML = `
+      <p><strong>Macro #${start + index + 1}</strong></p>
+      <p>Actions: ${macro.actions.length}</p>
+      <p><small style="color: #666;">Saved on: ${formattedDate}</small></p>
+      <button class="runMacroBtn" data-index="${start + index}">Run Macro</button>
+    `;
+
+    macrosContainer.appendChild(macroBox);
+  });
+
+  attachRunMacroHandlers();
+};
+
+  const renderMacroPaginationDots = () => {
+    const paginationDots = document.getElementById("paginationDotsTwo");
+    paginationDots.innerHTML = "";
+
+    const totalPages = Math.ceil(savedMacros.length / macrosPerPage);
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement("div");
+      dot.className = `dot ${i === macroPage ? "active" : ""}`;
+      dot.addEventListener("click", () => {
+        macroPage = i;
+        renderMacroSection(macroPage);
+        renderMacroPaginationDots();
+      });
+      paginationDots.appendChild(dot);
+    }
+  };
+
+  const loadAndRenderMacros = async () => {
+    const macros = await storage.get("macro_actions") || [];
+    savedMacros = macros;
+    macroPage = 0;
+    renderMacroSection(macroPage);
+    renderMacroPaginationDots();
+  };
+
+  const attachRunMacroHandlers = () => {
+    const buttons = document.querySelectorAll('.runMacroBtn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index);
+        const macro = savedMacros[index];
+        if (macro) {
+          runMacroOnActiveTab(macro.actions);
+        }
+      });
+    });
+  };
+
+  const runMacroOnActiveTab = async (actions) => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      chrome.tabs.sendMessage(tab.id, { type: "RUN_MACRO", actions });
+      console.log("Macro sent to tab:", tab.id);
+    } else {
+      console.error("No active tab found");
+    }
+  };
+
   // Autofill History & Macro History Show On Recent Activities
   async function renderRecentActivities() {
     const recentBox = document.querySelector('.recentActivitiesBox');
@@ -279,4 +368,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   renderRecentActivities();
+
+  setInterval(async () => {
+    console.log("Auto refreshing recent activities");
+    await renderRecentActivities();
+  }, 3000)
 });

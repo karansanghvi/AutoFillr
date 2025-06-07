@@ -80,7 +80,7 @@ function renderStep1(modal, groupedTabs) {
             type: 'macro',
             tabTitle: selectedTabInfo.title,
             tabUrl: selectedTabInfo.url,
-            timeStamp: Date.now()
+            timestamp: Date.now()
         });
 
         await storage.set('macroHistory', macroHistory)
@@ -158,6 +158,7 @@ function renderStep3(modal) {
                     id: Date.now(),
                     name: `Macro ${existingMacros.length + 1}`,
                     createdAt: new Date().toISOString(),
+                    timestamp: Date.now(),
                     actions: response.actions
                 };
 
