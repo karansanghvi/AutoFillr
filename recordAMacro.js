@@ -121,7 +121,7 @@ function renderStep2(modal) {
                 files: ['contentScript.js']
             });
 
-            // ✅ Wait until content script confirms readiness
+           
             const response = await sendMessageToContentScript(selectedTabInfo.id, { type: 'START_RECORDING' });
 
             console.log("📽️", response.status);
@@ -130,7 +130,7 @@ function renderStep2(modal) {
 
         } catch (error) {
             console.error('❌ Failed to start recording:', error);
-            showErrorAlert('Could not start recording. Ensure the tab is active and supports script injection.');
+            showErrorAlert('Could not start recording. Ensure the tab is active.');
         }
     });
 }
@@ -149,9 +149,21 @@ function renderStep3(modal) {
         try {
             const response = await sendMessageToContentScript(selectedTabInfo.id, { type: 'STOP_RECORDING' });
 
-            console.log("📌 Recorded actions received from content script: ", response.actions);
+            console.log("Recorded actions received from content script:", response.actions);
 
             if (Array.isArray(response.actions)) {
+
+                // Log each recorded action's selector and value (if any)
+                console.log('--- Detailed recorded actions ---');
+                response.actions.forEach((action, index) => {
+                    if ('value' in action) {
+                        console.log(`#${index}: Selector: ${action.selector}, Value Typed:`, action.value);
+                    } else {
+                        console.log(`#${index}: Selector: ${action.selector}, No input value (type: ${action.type})`);
+                    }
+                });
+                console.log('--- End of recorded actions ---');
+
                 const existingMacros = (await storage.get('macro_actions')) || [];
 
                 const newMacro = {
@@ -165,6 +177,10 @@ function renderStep3(modal) {
                 existingMacros.push(newMacro);
 
                 await storage.set('macro_actions', existingMacros);
+                
+                const verify = await storage.get('macro_actions');
+                console.log('Verify saved macros from storage:', verify);
+
                 showSuccessAlert("Macro Saved Successfully!!");
                 setTimeout(() => {
                     modal.remove();

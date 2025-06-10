@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const saveProfileButton = document.getElementById("saveProfileButton");
     const cancelProfileButton = document.getElementById("cancelProfileButton");
 
-    // Handle file input display
     fileInput.addEventListener("change", () => {
         const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "No file chosen";
         fileNameDisplay.textContent = fileName;
     });
 
-    // Populate form if editing
     (async () => {
         const editProfile = await storage.get("editProfile");
         if (editProfile) {
@@ -66,13 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 let updatedProfiles;
 
                 if (editProfile) {
-                    // Update existing profile (based on matching email)
                     updatedProfiles = existingData.map(p =>
                         p.email === editProfile.email ? profileData : p
                     );
-                    await storage.set("editProfile", null); // Clear edit mode
+                    await storage.set("editProfile", null); 
                 } else {
-                    // Add new profile
                     updatedProfiles = [...existingData, profileData];
                 }
 

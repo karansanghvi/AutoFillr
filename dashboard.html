@@ -67,11 +67,18 @@
 
       <!-- Run A Saved Macro -->
        <div id="runSavedMacroSection" class="section" style="display: none;">
-        <div class="profileTitle">
+        <div class="profileTitle" style="display: flex; align-items: center; gap: 20px;">
           <h1 class="title">Your Macros</h1>
+           <select id="itemsPerPageSelect" class="dropdown">
+            <option value="5">5 per page</option>
+            <option value="10">10 per page</option>
+            <option value="20">20 per page</option>
+            <option value="30">30 per page</option>
+            <option value="50">50 per page</option>
+            <option value="all">Show All</option>
+          </select>
         </div>
         <div id="macros"></div>
-        <div class="pagination-dots" id="paginationDotsTwo"></div>
       </div> 
     </div>
 
@@ -79,14 +86,39 @@
       <div class="modal-content">
         <h1 class="text">Are you sure you want to delete this profile?</h1>
         <p id="profileName"></p>
-        <button id="cancelDelete" class="cancel-btn">Cancel</button>
-        <button id="confirmDelete" class="confirm-btn">Delete</button>
+        <button id="cancelDelete" class="cancel-btn">No</button>
+        <button id="confirmDelete" class="confirm-btn">Yes</button>
       </div>
     </div>    
+
+    <div id="deleteModalRunMacro" class="macro-modal">
+      <div class="macro-modal-content">
+        <h1 class="text">Are you sure you want to delete this macro?</h1>
+        <button id="cancelDelete" class="cancel-btn">No</button>
+        <button id="confirmDelete" class="confirm-btn">Yes</button>
+      </div>
+    </div>    
+
+    <!-- First Dialog -->
+<div id="macroDialog" style="display: none; flex-direction: column;">
+  <h2 id="macroDialogTitle"></h2>
+  <p id="macroDialogBody"></p>
+  <button id="macroDialogNext">Next</button>
+</div>
+
+<!-- Second Dialog -->
+<div id="macroDialog2" style="display: none; flex-direction: column;">
+  <h2>Step 2: Confirm</h2>
+  <p>This is the second step.</p>
+  <button id="macroDialog2Close">Close</button>
+</div>
+
+
   </div>
 
     <script type="module" src="dashboard.js"></script>
     <script type="module" src="autoFillThisForm.js"></script>
     <script type="module" src="recordAMacro.js"></script>
+    <script type="module" src="runASavedMacro.js"></script>
 </body>
 </html>

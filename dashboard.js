@@ -14,8 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const runSavedMacroSection = document.getElementById("runSavedMacroSection");
 
   const addNewProfile = document.getElementById("addNewProfile");
-  
-  const container = document.getElementById("profileContainer");
 
   showSection(homeSection);
   homeLink.classList.add("active");

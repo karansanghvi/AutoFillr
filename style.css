@@ -1,6 +1,10 @@
 body {
     font-family: "Poppins", sans-serif;
-    background-color: rgb(9, 14, 16);
+    /* background-color: rgb(9, 14, 16); */
+    background-color: #1e3c72;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
 }
 
 .hidden {
@@ -29,6 +33,16 @@ body {
     margin-right: auto;
     width: 100%;
     max-width: 280px;
+}
+
+.dropdown {
+   border-radius: 10px;
+   padding: 10px 50px;
+   margin-right: 80px;
+   font-size: 20px;
+   background-color: #007BFF;
+   border-color: #007BFF;
+   color: white;
 }
 
 .primary-button:hover {
@@ -174,11 +188,10 @@ hr {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding-top: 40px;
 }
 
 .homeSection .heading {
-    font-size: 150px;
+    font-size: 200px;
     font-weight: 600;
     color: white;
     margin-bottom: 0;
@@ -187,7 +200,7 @@ hr {
 .subtext {
     margin-top: 0;
     font-size: 30px;
-    color: #03A4D9;
+    color: white;
     font-style: italic;
 }
 
@@ -573,6 +586,28 @@ input:focus.error {
     background-color: rgba(0, 0, 0, 0.4);
     overflow: auto;
 }
+
+.macro-modal {
+    display: none; 
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto;
+}
+
+.macro-modal-content {
+    background-color: white;
+    margin: 8% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 20px;
+}
   
 .modal-content {
     background-color: white;
@@ -759,6 +794,21 @@ button {
         margin-top: 10px;
     }
 }
+
+.savedMacro {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 80%;
+    max-width: 1400px;
+    text-align: left;
+}
   
 @media (max-width: 480px) {
     .homeSection .heading {
@@ -781,6 +831,11 @@ button {
     }
 
     .box {
+        width: 95%;
+        padding: 12px;
+    }
+
+    .savedMacro {
         width: 95%;
         padding: 12px;
     }

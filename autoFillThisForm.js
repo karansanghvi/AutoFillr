@@ -199,7 +199,6 @@ function renderStep3(modal) {
                 await renderAutofillHistory();
             } catch (err) {
                 console.warn('⚠️ Failed to render autofill history:', err);
-                // Continue even if history rendering fails
             }
 
             console.log('✅ Proceeding to success modal...');
